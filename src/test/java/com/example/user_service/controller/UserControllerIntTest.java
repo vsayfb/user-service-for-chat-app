@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.example.user_service.api_messages.APIMessages;
 import com.example.user_service.dto.request.CreateUserDTO;
 import com.example.user_service.dto.request.ValidateUserDTO;
 import com.example.user_service.model.User;
@@ -59,7 +60,7 @@ public class UserControllerIntTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Is.is("User is created successfully.")))
+                        Is.is(APIMessages.USER_CREATED)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
                         Matchers.any(String.class)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.username",
@@ -118,7 +119,7 @@ public class UserControllerIntTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Is.is("User found.")))
+                        Is.is(APIMessages.USER_FOUND)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
                         Matchers.any(String.class)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data",
@@ -145,7 +146,7 @@ public class UserControllerIntTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
-                        Is.is("User not found.")))
+                        Is.is(APIMessages.USER_NOT_FOUND)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
                         Matchers.any(String.class)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error",

@@ -3,6 +3,7 @@ package com.example.user_service.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.user_service.api_messages.APIMessages;
 import com.example.user_service.dto.request.CreateUserDTO;
 import com.example.user_service.dto.response.CreatedUserDTO;
 import com.example.user_service.exception.UsernameTakenException;
@@ -33,7 +34,7 @@ public class UserController {
         try {
             CreatedUserDTO createdUser = userService.createUser(userDTO);
 
-            return new SuccessResponse<>(createdUser, "User is created successfully.", HttpStatus.CREATED)
+            return new SuccessResponse<>(createdUser, APIMessages.USER_CREATED, HttpStatus.CREATED)
                     .send();
 
         } catch (UsernameTakenException e) {
@@ -46,10 +47,10 @@ public class UserController {
     public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid CreateUserDTO reqDto) {
 
         if (userService.getByUsernameAndPassword(reqDto.getUsername(), reqDto.getPassword()).isPresent()) {
-            return new SuccessResponse<>(true, "User found.", HttpStatus.OK).send();
+            return new SuccessResponse<>(true, APIMessages.USER_FOUND, HttpStatus.OK).send();
         }
 
-        return new ErrorResponse("User not found.", HttpStatus.BAD_REQUEST).send();
+        return new ErrorResponse(APIMessages.USER_NOT_FOUND, HttpStatus.BAD_REQUEST).send();
     }
 
 }

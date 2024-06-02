@@ -1,5 +1,8 @@
 package com.example.user_service.model;
 
+import java.util.Date;
+
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,4 +18,7 @@ public class User {
     private String username;
 
     private String password;
+
+    @CreatedDate
+    private Date createdAt;
 }

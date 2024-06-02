@@ -34,6 +34,6 @@ public class UserService {
 
         userRepository.save(newUser);
 
-        return new CreatedUserDTO(newUser.getUsername());
+        return new CreatedUserDTO(newUser);
     }
 }

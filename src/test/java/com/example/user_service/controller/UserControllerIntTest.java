@@ -5,18 +5,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.user_service.dto.request.CreateUserDTO;
 import com.example.user_service.model.User;
 import com.example.user_service.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.hamcrest.Matchers;
+import org.hamcrest.core.Is;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,7 +52,17 @@ public class UserControllerIntTest {
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Is.is("User is created successfully.")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
+                        Matchers.any(String.class)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.username",
+                        Is.is(user.getUsername())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.createdAt",
+                        Matchers.any(String.class)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id",
+                        Matchers.any(String.class)));
     }
 
     @Test
@@ -61,7 +75,7 @@ public class UserControllerIntTest {
 
         userRepository.save(existingUser);
 
-        CreateUserDTO user = new CreateUserDTO(existingUser.getUsername(), "pass");
+        CreateUserDTO user = new CreateUserDTO(existingUser.getUsername(), "password_1");
 
         String requestBody = objectMapper.writeValueAsString(user);
 
@@ -70,6 +84,12 @@ public class UserControllerIntTest {
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Is.is(String.format("Username {%s} is already taken.", user.getUsername()))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
+                        Matchers.any(String.class)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error",
+                        Is.is(HttpStatus.BAD_REQUEST.name())));
     }
 }

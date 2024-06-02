@@ -10,9 +10,10 @@ import com.example.user_service.response_entity.ErrorResponse;
 import com.example.user_service.response_entity.SuccessResponse;
 import com.example.user_service.service.UserService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CreateUserDTO userDTO) {
+    public ResponseEntity<?> create(@RequestBody @Valid CreateUserDTO userDTO) {
 
         try {
             CreatedUserDTO createdUser = userService.createUser(userDTO);

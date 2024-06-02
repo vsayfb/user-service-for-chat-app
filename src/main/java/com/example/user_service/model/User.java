@@ -7,6 +7,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.example.user_service.validations.UsernameRules;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -18,7 +20,7 @@ public class User {
     private String id;
 
     @NotNull
-    @Length(min = 2, max = 18)
+    @Length(min = UsernameRules.MIN_LENGTH, max = UsernameRules.MAX_LENGTH)
     private String username;
 
     @NotNull

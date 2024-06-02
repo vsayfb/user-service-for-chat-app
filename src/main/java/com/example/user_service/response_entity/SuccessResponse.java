@@ -28,6 +28,9 @@ public class SuccessResponse<T> {
     }
 
     public ResponseEntity<SuccessResponse<T>> send() {
+
+        this.timestamp = new Date();
+
         return new ResponseEntity<>(this, httpStatus);
     }
 }

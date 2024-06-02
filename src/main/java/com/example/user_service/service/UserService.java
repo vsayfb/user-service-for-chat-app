@@ -9,14 +9,18 @@ import com.example.user_service.dto.response.CreatedUserDTO;
 import com.example.user_service.exception.UsernameTakenException;
 import com.example.user_service.model.User;
 import com.example.user_service.repository.UserRepository;
+import com.example.user_service.util.PasswordManager;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private final PasswordManager passwordManager;
+
+    public UserService(UserRepository userRepository, PasswordManager passwordManager) {
         this.userRepository = userRepository;
+        this.passwordManager = passwordManager;
     }
 
     public CreatedUserDTO createUser(CreateUserDTO userDTO) throws UsernameTakenException {
@@ -30,7 +34,10 @@ public class UserService {
         User newUser = new User();
 
         newUser.setUsername(userDTO.getUsername());
-        newUser.setPassword(userDTO.getPassword());
+
+        String encoded = passwordManager.encodePassword(userDTO.getPassword());
+
+        newUser.setPassword(encoded);
 
         userRepository.save(newUser);
 

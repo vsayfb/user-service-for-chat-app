@@ -22,7 +22,6 @@ public class User {
     private String username;
 
     @NotNull
-    @Length(min = 8, max = 40)
     private String password;
 
     @CreatedDate

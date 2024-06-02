@@ -13,6 +13,7 @@ import com.example.user_service.dto.response.CreatedUserDTO;
 import com.example.user_service.exception.UsernameTakenException;
 import com.example.user_service.model.User;
 import com.example.user_service.repository.UserRepository;
+import com.example.user_service.util.PasswordManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,6 +26,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordManager passwordManager;
 
     @InjectMocks
     private UserService userService;

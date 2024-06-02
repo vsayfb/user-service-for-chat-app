@@ -42,4 +42,14 @@ public class UserController {
         }
     }
 
+    @PostMapping("validate")
+    public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid CreateUserDTO reqDto) {
+
+        if (userService.getByUsernameAndPassword(reqDto.getUsername(), reqDto.getPassword()).isPresent()) {
+            return new SuccessResponse<>(true, "User found.", HttpStatus.OK).send();
+        }
+
+        return new ErrorResponse("User not found.", HttpStatus.BAD_REQUEST).send();
+    }
+
 }

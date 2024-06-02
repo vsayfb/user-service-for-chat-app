@@ -11,8 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.example.user_service.dto.request.CreateUserDTO;
+import com.example.user_service.dto.request.ValidateUserDTO;
 import com.example.user_service.model.User;
 import com.example.user_service.repository.UserRepository;
+import com.example.user_service.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +33,9 @@ public class UserControllerIntTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -92,4 +97,59 @@ public class UserControllerIntTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error",
                         Is.is(HttpStatus.BAD_REQUEST.name())));
     }
+
+    @Test
+    void shouldFindUser() throws Exception {
+
+        User user = new User();
+
+        user.setUsername("username");
+        user.setPassword("password");
+
+        userService.createUser(new CreateUserDTO(user.getUsername(), user.getPassword()));
+
+        ValidateUserDTO userDTO = new ValidateUserDTO(user.getUsername(), user.getPassword());
+
+        String requestBody = objectMapper.writeValueAsString(userDTO);
+
+        mockMvc.perform(
+                post("/users/validate")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Is.is("User found.")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
+                        Matchers.any(String.class)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data",
+                        Is.is(true)));
+    }
+
+    @Test
+    void shouldNotFindUser() throws Exception {
+
+        User user = new User();
+
+        user.setUsername("username");
+        user.setPassword("password");
+
+        userService.createUser(new CreateUserDTO(user.getUsername(), user.getPassword()));
+
+        ValidateUserDTO userDTO = new ValidateUserDTO(user.getUsername(), "diff-password");
+
+        String requestBody = objectMapper.writeValueAsString(userDTO);
+
+        mockMvc.perform(
+                post("/users/validate")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Is.is("User not found.")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
+                        Matchers.any(String.class)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error",
+                        Is.is(HttpStatus.BAD_REQUEST.name())));
+    }
+
 }

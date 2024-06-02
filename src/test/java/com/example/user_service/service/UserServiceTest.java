@@ -17,6 +17,7 @@ import com.example.user_service.util.PasswordManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -38,7 +39,7 @@ public class UserServiceTest {
 
         CreateUserDTO userDTO = new CreateUserDTO("username", "password");
 
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
         CreatedUserDTO createdUser = userService.createUser(userDTO);
 
@@ -56,5 +57,47 @@ public class UserServiceTest {
         assertThatExceptionOfType(UsernameTakenException.class)
                 .isThrownBy(() -> userService.createUser(userDTO))
                 .withMessageContaining("already taken.");
+    }
+
+    @Test
+    void shouldFindUser() {
+
+        User user = new User();
+
+        user.setUsername("username");
+        user.setPassword("password");
+
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+        when(passwordManager.checkPassword(anyString(), anyString())).thenReturn(true);
+
+        Optional<User> optional = userService.getByUsernameAndPassword(user.getUsername(), user.getPassword());
+
+        assertTrue(optional.isPresent());
+
+        assertEquals(optional.get().getUsername(), user.getUsername());
+        assertEquals(optional.get().getPassword(), user.getPassword());
+    }
+
+    @Test
+    void shouldNotFindUser() {
+
+        User user = new User();
+
+        user.setUsername("username");
+        user.setPassword("password");
+
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+        when(passwordManager.checkPassword(anyString(), anyString())).thenReturn(false);
+
+        Optional<User> optional = userService.getByUsernameAndPassword(user.getUsername(), user.getPassword());
+
+        assertTrue(optional.isEmpty());
+
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+        when(passwordManager.checkPassword(anyString(), anyString())).thenReturn(false);
+
+        Optional<User> optionalUser = userService.getByUsernameAndPassword(user.getUsername(), user.getPassword());
+
+        assertTrue(optionalUser.isEmpty());
     }
 }

@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.example.user_service.dto.request.CreateUserDTO;
+import com.example.user_service.dto.request.ValidateUserDTO;
 import com.example.user_service.dto.response.CreatedUserDTO;
 import com.example.user_service.exception.UsernameTakenException;
 import com.example.user_service.model.User;
@@ -40,7 +43,6 @@ public class UserControllerTest {
 
         var response = (ResponseEntity<SuccessResponse<CreatedUserDTO>>) userController.create(userDTO);
 
-        assertNotNull(response.getBody());
         assertEquals(response.getBody().getHttpStatus(), HttpStatus.CREATED);
     }
 
@@ -56,4 +58,34 @@ public class UserControllerTest {
         assertNotNull(response.getBody());
         assertEquals(response.getBody().getError(), HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    void shouldFindUser() {
+
+        ValidateUserDTO userDTO = new ValidateUserDTO("username", "password");
+
+        when(userService.getByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword()))
+                .thenReturn(Optional.ofNullable(new User()));
+
+        var response = (ResponseEntity<SuccessResponse<Boolean>>) userController.validateUserCredentials(userDTO);
+
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(response.getBody().getData(), true);
+
+    }
+
+    @Test
+    void shouldNotFindUser() {
+
+        ValidateUserDTO userDTO = new ValidateUserDTO("username", "password");
+
+        when(userService.getByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword()))
+                .thenReturn(Optional.empty());
+
+        var response = (ResponseEntity<ErrorResponse>) userController.validateUserCredentials(userDTO);
+
+        assertEquals(response.getBody().getError(), HttpStatus.BAD_REQUEST);
+    }
+
 }

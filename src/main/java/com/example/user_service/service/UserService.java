@@ -43,4 +43,19 @@ public class UserService {
 
         return new CreatedUserDTO(newUser);
     }
+
+    public Optional<User> getByUsernameAndPassword(String username, String password) {
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (passwordManager.checkPassword(password, user.get().getPassword())) {
+            return user;
+        }
+
+        return Optional.empty();
+    }
 }

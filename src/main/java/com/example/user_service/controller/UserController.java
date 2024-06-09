@@ -38,19 +38,20 @@ public class UserController {
                     .send();
 
         } catch (UsernameTakenException e) {
-            return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST)
+            return new ErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN)
                     .send();
         }
     }
 
     @PostMapping("validate")
-    public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid CreateUserDTO reqDto) {
+    public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid CreateUserDTO createUserDTO) {
 
-        if (userService.getByUsernameAndPassword(reqDto.getUsername(), reqDto.getPassword()).isPresent()) {
+        if (userService.getByUsernameAndPassword(createUserDTO.getUsername(), createUserDTO.getPassword())
+                .isPresent()) {
             return new SuccessResponse<>(true, APIMessages.USER_FOUND, HttpStatus.OK).send();
         }
 
-        return new ErrorResponse(APIMessages.USER_NOT_FOUND, HttpStatus.BAD_REQUEST).send();
+        return new ErrorResponse(APIMessages.USER_NOT_FOUND, HttpStatus.FORBIDDEN).send();
     }
 
 }

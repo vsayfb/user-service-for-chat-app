@@ -56,7 +56,7 @@ public class UserControllerTest {
         var response = (ResponseEntity<ErrorResponse>) userController.create(userDTO);
 
         assertNotNull(response.getBody());
-        assertEquals(response.getBody().getError(), HttpStatus.BAD_REQUEST);
+        assertEquals(response.getBody().getError(), HttpStatus.FORBIDDEN);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class UserControllerTest {
 
         var response = (ResponseEntity<ErrorResponse>) userController.validateUserCredentials(userDTO);
 
-        assertEquals(response.getBody().getError(), HttpStatus.BAD_REQUEST);
+        assertEquals(response.getBody().getError(), HttpStatus.FORBIDDEN);
     }
 
 }

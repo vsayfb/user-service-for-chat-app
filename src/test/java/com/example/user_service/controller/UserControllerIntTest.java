@@ -89,14 +89,14 @@ public class UserControllerIntTest {
                 post("/users")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
                         Is.is(String.format("Username {%s} is already taken.", user.getUsername()))))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
                         Matchers.any(String.class)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error",
-                        Is.is(HttpStatus.BAD_REQUEST.name())));
+                        Is.is(HttpStatus.FORBIDDEN.name())));
     }
 
     @Test
@@ -144,13 +144,13 @@ public class UserControllerIntTest {
                 post("/users/validate")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isForbidden())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message",
                         Is.is(APIMessages.USER_NOT_FOUND)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
                         Matchers.any(String.class)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error",
-                        Is.is(HttpStatus.BAD_REQUEST.name())));
+                        Is.is(HttpStatus.FORBIDDEN.name())));
     }
 
 }

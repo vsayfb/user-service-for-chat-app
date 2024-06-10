@@ -122,8 +122,10 @@ public class UserControllerIntTest {
                         Is.is(APIMessages.USER_FOUND)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp",
                         Matchers.any(String.class)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data",
-                        Is.is(true)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.id",
+                        Matchers.any(String.class)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.username",
+                        Matchers.any(String.class)));
     }
 
     @Test

@@ -2,10 +2,10 @@ package com.example.user_service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -64,15 +64,20 @@ public class UserControllerTest {
 
         ValidateUserDTO userDTO = new ValidateUserDTO("username", "password");
 
-        when(userService.getByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword()))
-                .thenReturn(Optional.ofNullable(new User()));
+        User dummyUser = new User();
 
-        var response = (ResponseEntity<SuccessResponse<Boolean>>) userController.validateUserCredentials(userDTO);
+        dummyUser.setUsername("username");
+        dummyUser.setId("21421849");
+
+        when(userService.getByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword()))
+                .thenReturn(Optional.of(dummyUser));
+
+        var response = (ResponseEntity<SuccessResponse<HashMap<String, String>>>) userController.validateUserCredentials(userDTO);
 
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(response.getBody().getData(), true);
-
+        assertNotNull(response.getBody().getData().get("username"));
+        assertNotNull(response.getBody().getData().get("id"));
     }
 
     @Test

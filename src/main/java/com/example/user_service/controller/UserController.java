@@ -1,5 +1,7 @@
 package com.example.user_service.controller;
 
+import com.example.user_service.dto.request.ValidateUserDTO;
+import com.example.user_service.model.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.HashMap;
+import java.util.Optional;
 
 @RequestMapping("users")
 @RestController
@@ -44,11 +49,18 @@ public class UserController {
     }
 
     @PostMapping("validate")
-    public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid CreateUserDTO createUserDTO) {
+    public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid ValidateUserDTO validateUserDTO) {
 
-        if (userService.getByUsernameAndPassword(createUserDTO.getUsername(), createUserDTO.getPassword())
-                .isPresent()) {
-            return new SuccessResponse<>(true, APIMessages.USER_FOUND, HttpStatus.OK).send();
+        Optional<User> user = userService.getByUsernameAndPassword(validateUserDTO.getUsername(), validateUserDTO.getPassword());
+
+        if (user.isPresent()) {
+
+            HashMap<String, String> response = new HashMap<>();
+
+            response.put("id", user.get().getId());
+            response.put("username", user.get().getUsername());
+
+            return new SuccessResponse<>(response, APIMessages.USER_FOUND, HttpStatus.OK).send();
         }
 
         return new ErrorResponse(APIMessages.USER_NOT_FOUND, HttpStatus.FORBIDDEN).send();

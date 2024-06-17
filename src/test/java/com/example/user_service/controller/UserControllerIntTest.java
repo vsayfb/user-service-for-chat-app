@@ -54,7 +54,7 @@ public class UserControllerIntTest {
         String requestBody = objectMapper.writeValueAsString(user);
 
         mockMvc.perform(
-                post("/users")
+                post("/users/")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -86,7 +86,7 @@ public class UserControllerIntTest {
         String requestBody = objectMapper.writeValueAsString(user);
 
         mockMvc.perform(
-                post("/users")
+                post("/users/")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden())

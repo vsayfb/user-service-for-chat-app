@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.HashMap;
 import java.util.Optional;
 
-@RequestMapping("users")
+@RequestMapping("/users")
 @RestController
 public class UserController {
 
@@ -33,7 +33,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<?> create(@RequestBody @Valid CreateUserDTO userDTO) {
 
         try {
@@ -48,7 +48,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("validate")
+    @PostMapping("/validate")
     public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid ValidateUserDTO validateUserDTO) {
 
         Optional<User> user = userService.getByUsernameAndPassword(validateUserDTO.getUsername(), validateUserDTO.getPassword());

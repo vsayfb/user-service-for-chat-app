@@ -26,6 +26,9 @@ public class User {
     @NotNull
     private String password;
 
+    @NotNull
+    private String profilePicture;
+
     @CreatedDate
     private Date createdAt;
 

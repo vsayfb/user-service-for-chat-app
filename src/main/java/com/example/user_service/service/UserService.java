@@ -39,6 +39,8 @@ public class UserService {
 
         newUser.setPassword(encoded);
 
+        newUser.setProfilePicture("http://robohash.org/" + userDTO.getUsername() + ".png");
+
         userRepository.save(newUser);
 
         return new CreatedUserDTO(newUser);

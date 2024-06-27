@@ -41,9 +41,9 @@ public class UserService {
 
         newUser.setProfilePicture("http://robohash.org/" + userDTO.getUsername() + ".png");
 
-        userRepository.save(newUser);
+        User saved = userRepository.save(newUser);
 
-        return new CreatedUserDTO(newUser);
+        return new CreatedUserDTO(saved);
     }
 
     public Optional<User> getByUsernameAndPassword(String username, String password) {

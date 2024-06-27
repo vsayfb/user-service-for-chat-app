@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 @RequestMapping("/users")
@@ -51,16 +50,14 @@ public class UserController {
     @PostMapping("/validate")
     public ResponseEntity<?> validateUserCredentials(@RequestBody @Valid ValidateUserDTO validateUserDTO) {
 
-        Optional<User> user = userService.getByUsernameAndPassword(validateUserDTO.getUsername(), validateUserDTO.getPassword());
+        Optional<User> user = userService.getByUsernameAndPassword(validateUserDTO.getUsername(),
+                validateUserDTO.getPassword());
 
         if (user.isPresent()) {
 
-            HashMap<String, String> response = new HashMap<>();
+            CreatedUserDTO loggedInDto = new CreatedUserDTO(user.get());
 
-            response.put("id", user.get().getId());
-            response.put("username", user.get().getUsername());
-
-            return new SuccessResponse<>(response, APIMessages.USER_FOUND, HttpStatus.OK).send();
+            return new SuccessResponse<>(loggedInDto, APIMessages.USER_FOUND, HttpStatus.OK).send();
         }
 
         return new ErrorResponse(APIMessages.USER_NOT_FOUND, HttpStatus.FORBIDDEN).send();

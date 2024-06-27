@@ -13,11 +13,14 @@ public class CreatedUserDTO {
 
     private final String username;
 
+    private final String profilePicture;
+
     private final Date createdAt;
 
     public CreatedUserDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
+        this.profilePicture = user.getProfilePicture();
         this.createdAt = user.getCreatedAt();
     }
 }

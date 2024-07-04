@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-ms
+spec:
+  selector:
+    matchLabels:
+      app: user-ms
+  template:
+    metadata:
+      labels:
+        app: user-ms
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -zv mongo-service 27017; do echo waiting for mongo; sleep 2; done;",
+            ]
+
+      containers:
+        - name: user-ms
+          image: user-ms:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "600Mi"
+            requests:
+              memory: "300Mi"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secrets
+                  key: mongo-uri
+            - name: MONGO_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secrets
+                  key: mongo-db-name
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-ms
+  ports:
+    - port: 8080
+      targetPort: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:4.4.6
+          resources:
+            limits:
+              memory: "600Mi"
+            requests:
+              memory: "300Mi"
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secrets
+                  key: mongo-root-user
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secrets
+                  key: mongo-root-password
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-secrets
+data:
+  mongo-uri: bW9uZ29kYjovL2F3ZXNvbWUtdXNlcjpzdHJvbmctcGFzc3dvcmRAbW9uZ28tc2VydmljZToyNzAxNy8/YXV0aFNvdXJjZT1hZG1pbg==
+  mongo-db-name: dXNlcnM=
+  mongo-root-user: YXdlc29tZS11c2Vy
+  mongo-root-password: c3Ryb25nLXBhc3N3b3Jk

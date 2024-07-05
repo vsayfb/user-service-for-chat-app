@@ -78,6 +78,7 @@ public class UserControllerIntTest {
 
         existingUser.setUsername("username");
         existingUser.setPassword("password");
+        existingUser.setProfilePicture("http://picture");
 
         userRepository.save(existingUser);
 
@@ -106,6 +107,7 @@ public class UserControllerIntTest {
 
         user.setUsername("username");
         user.setPassword("password");
+        user.setProfilePicture("http://picture");
 
         userService.createUser(new CreateUserDTO(user.getUsername(), user.getPassword()));
 
@@ -135,6 +137,7 @@ public class UserControllerIntTest {
 
         user.setUsername("username");
         user.setPassword("password");
+        user.setProfilePicture("http://picture");
 
         userService.createUser(new CreateUserDTO(user.getUsername(), user.getPassword()));
 

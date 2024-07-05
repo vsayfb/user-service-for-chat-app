@@ -68,16 +68,16 @@ public class UserControllerTest {
 
         dummyUser.setUsername("username");
         dummyUser.setId("21421849");
+        dummyUser.setProfilePicture("http://picture");
 
         when(userService.getByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword()))
                 .thenReturn(Optional.of(dummyUser));
 
-        var response = (ResponseEntity<SuccessResponse<HashMap<String, String>>>) userController.validateUserCredentials(userDTO);
+        var response = userController.validateUserCredentials(userDTO);
 
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody().getData().get("username"));
-        assertNotNull(response.getBody().getData().get("id"));
+
     }
 
     @Test

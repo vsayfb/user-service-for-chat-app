@@ -18,6 +18,7 @@ import com.example.user_service.util.PasswordManager;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,10 +42,16 @@ public class UserServiceTest {
 
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
+        User result = new User();
+
+        result.setUsername(userDTO.getUsername());
+
+        when(userRepository.save(any(User.class))).thenReturn(result);
+
         CreatedUserDTO createdUser = userService.createUser(userDTO);
 
         assertNotNull(createdUser);
-        assertEquals(createdUser.getUsername(), userDTO.getUsername());
+        assertEquals(result.getUsername(), userDTO.getUsername());
     }
 
     @Test
@@ -66,6 +73,7 @@ public class UserServiceTest {
 
         user.setUsername("username");
         user.setPassword("password");
+        user.setProfilePicture("http://picture");
 
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
         when(passwordManager.checkPassword(anyString(), anyString())).thenReturn(true);

@@ -1,6 +1,5 @@
 package com.example.user_service.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +48,7 @@ public class UserServiceIntTest {
 
         existingUser.setUsername("username");
         existingUser.setPassword("password");
+        existingUser.setProfilePicture("http://picture");
 
         userRepository.save(existingUser);
 

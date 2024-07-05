@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.example.user_service.service.UserService;
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
+import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.spring.spring6.PactVerificationSpring6Provider;
@@ -31,9 +32,9 @@ import static org.mockito.ArgumentMatchers.any;
 
 import static org.mockito.Mockito.*;
 
-
 @Provider("UserService")
 @PactBroker
+@IgnoreNoPactsToVerify
 @WebMvcTest(UserController.class)
 public class AuthenticationServiceContractVerificationTest {
 
@@ -47,7 +48,10 @@ public class AuthenticationServiceContractVerificationTest {
     @TestTemplate
     @ExtendWith(PactVerificationSpring6Provider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
-        context.verifyInteraction();
+
+        if (context != null) {
+            context.verifyInteraction();
+        }
     }
 
     @BeforeEach
@@ -56,26 +60,30 @@ public class AuthenticationServiceContractVerificationTest {
 
         disableValidation();
 
-        context.setTarget(new Spring6MockMvcTestTarget(mockMvc));
+        if (context != null) {
+
+            context.setTarget(new Spring6MockMvcTestTarget(mockMvc));
+        }
+
     }
 
     @State("invalid body")
-    void invalidBody(){
+    void invalidBody() {
         enableValidation();
     }
 
     @State("invalid credentials")
-    void invalidCredentialsToAuthenticateUser(){
+    void invalidCredentialsToAuthenticateUser() {
         when(userService.getByUsernameAndPassword(any(String.class), any(String.class))).thenReturn(Optional.empty());
     }
 
     @State("valid body with existing user")
-    void validBodyWithExistingUserToCreateUser(){
+    void validBodyWithExistingUserToCreateUser() {
         when(userService.createUser(any(CreateUserDTO.class))).thenThrow(new UsernameTakenException("username"));
     }
 
     @State("valid body with non-existing user")
-    void validBodyWithNonExistingUserToCreateUser(){
+    void validBodyWithNonExistingUserToCreateUser() {
         User user = new User();
         user.setId(ObjectId.get().toHexString());
         user.setUsername("username");
@@ -84,7 +92,7 @@ public class AuthenticationServiceContractVerificationTest {
     }
 
     @State("valid body with valid credentials")
-    void validBodyWithValidCredentialsToAuthenticateUser(){
+    void validBodyWithValidCredentialsToAuthenticateUser() {
         User user = new User();
         user.setId(ObjectId.get().toHexString());
         user.setUsername("username");
@@ -92,13 +100,13 @@ public class AuthenticationServiceContractVerificationTest {
         when(userService.getByUsernameAndPassword(any(String.class), any(String.class))).thenReturn(Optional.of(user));
     }
 
-    public void enableValidation(){
+    public void enableValidation() {
         mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService)).build();
 
         context.setTarget(new Spring6MockMvcTestTarget(mockMvc));
     }
 
-    public void disableValidation(){
+    public void disableValidation() {
         Validator validator = Mockito.mock(LocalValidatorFactoryBean.class);
 
         mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService)).setValidator(validator).build();
